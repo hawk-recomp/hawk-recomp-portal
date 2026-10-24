@@ -1,0 +1,414 @@
+---
+interface Props { locale: 'en' | 'pt'; }
+const {locale} = Astro.props;
+const pt = locale === 'pt';
+const base = import.meta.env.BASE_URL.replace(/\/$/, '');
+const home = `${base}/`; const portuguese = `${base}/pt-br/`;
+const image = (name: string) => `${base}/images/${name}.webp`;
+const github = 'https://github.com/hawk-recomp';
+const labels = pt ? {
+ home:'Início',projects:'Projetos',research:'Pesquisa',community:'Comunidade',about:'Sobre',search:'Buscar jogos e projetos...',
+ featured:'PROJETO EM DESTAQUE',heroLabel:'XBOX ORIGINAL · RECOMPILAÇÃO NATIVA',headline:'O futebol de rua clássico. Rumo ao PC.',intro:'Acompanhe a pesquisa comunitária para recompilar FIFA Street 2 do Xbox original para Windows. O port ainda é experimental.',view:'Ver projeto',learn:'Saiba mais',exp:'Experimental',communityPort:'Port comunitário', researchStatus:'Pesquisa',
+ featureTitle:'Projetos em destaque',viewAll:'Ver todos',missionLabel:'NOSSA MISSÃO',missionTitle:'Preservando jogos. Reconstruindo experiências.',missionDesc:'Iniciativa independente voltada à recompilação nativa, pesquisa e documentação para preservação de jogos.',missionLink:'Conhecer a iniciativa',researchLabel:'PESQUISA TÉCNICA',researchTitle:'Do console para o PC',researchDesc:'Investigamos formatos executáveis, runtimes e ferramentas para apoiar ports nativos.',researchLink:'Explorar pesquisa',communityLabel:'COMUNIDADE',communityTitle:'Desenvolvimento aberto',communityDesc:'Contribua com pesquisa, testes, tradução, documentação e melhorias.',join:'Contribuir no GitHub',proof1:'Projetos reais',proof1b:'Com fontes verificáveis',proof2:'Comunidade',proof2b:'Aberta e transparente',proof3:'Documentação',proof3b:'Pesquisa e preservação',disclaimer:'HAWK Recomp é independente e não distribui ROMs, ISOs ou arquivos comerciais. Imagens desta prévia são conceituais, não capturas de gameplay.',original:'Projeto original',status:'Status',available:'Disponível no GitHub',noResults:'Nenhum projeto encontrado.'
+} : {
+ home:'Home',projects:'Projects',research:'Research',community:'Community',about:'About',search:'Search games, projects, guides...',
+ featured:'FEATURED PROJECT',heroLabel:'ORIGINAL XBOX · NATIVE RECOMPILATION',headline:'Classic street football. A new path to PC.',intro:'Follow community research to recompile FIFA Street 2 from the original Xbox for Windows. This port is still experimental.',view:'View Project',learn:'Learn More',exp:'Experimental',communityPort:'Community Port',researchStatus:'Research',
+ featureTitle:'Featured Projects',viewAll:'View all projects',missionLabel:'OUR MISSION',missionTitle:'Preserving games. Rebuilding experiences.',missionDesc:'An independent initiative supporting native recompilation, research and documentation for game preservation.',missionLink:'About the initiative',researchLabel:'TECHNICAL RESEARCH',researchTitle:'From Console to PC',researchDesc:'We investigate binary formats, runtimes and tooling to support native ports.',researchLink:'Explore research',communityLabel:'COMMUNITY',communityTitle:'Open development',communityDesc:'Contribute research, testing, translations, documentation and improvements.',join:'Contribute on GitHub',proof1:'Real projects',proof1b:'With verifiable sources',proof2:'Community driven',proof2b:'Open and transparent',proof3:'Documentation',proof3b:'For research and preservation',disclaimer:'HAWK Recomp is independent and does not distribute ROMs, ISOs, or commercial game files. Preview imagery is conceptual, not gameplay footage.',original:'Original project',status:'Status',available:'Available on GitHub',noResults:'No projects found.'
+};
+const games = [
+  {"title":"FIFA Street 2","platforms":"PS2 / Xbox","priority":"Alta","img":"fs2-art","url":"https://github.com/jv36/fifastreet2-recomp","status":"Experimental","cover":"/hawk-recomp-portal/images/covers/FIFA_Street_2.png","slug":"fifa-street-2"},
+  {"title":"Midnight Club 3: DUB Edition Remix","platforms":"PS2 / Xbox","priority":"Alta","img":null,"url":null,"status":"Recompilação relacionada","cover":"/hawk-recomp-portal/images/covers/Midnight_Club_3_DUB_Edition.png","relatedUrl":"https://github.com/laureladastra/mcdub3-nx","projectNote":"Recompila DUB Edition original, não Remix.","slug":"midnight-club-3-dub-edition-remix"},
+  {"title":"NBA Street Vol. 2","platforms":"PS2 / Xbox / GameCube","priority":"Alta","img":null,"url":null,"status":"Recompilação relacionada","cover":"/hawk-recomp-portal/images/covers/NBA_Street_Vol_2.png","relatedUrl":"https://github.com/recomp-code/street-recomp-v3","projectNote":"Port de NBA Street V3, não Vol. 2.","slug":"nba-street-vol-2"},
+  {"title":"NFL Street 2","platforms":"PS2 / Xbox / GameCube","priority":"Alta","img":null,"url":"https://github.com/mitsevox/nflstreet2","status":"Decompilação","cover":"/hawk-recomp-portal/images/covers/NFL_Street_2.png","relatedUrl":null,"projectNote":"Pesquisa e decompilação GameCube.","slug":"nfl-street-2"},
+  {"title":"SSX Tricky","platforms":"PS2 / Xbox / GameCube","priority":"Alta","img":null,"url":"https://github.com/ssxdecomp/ssxtricky","status":"Decompilação","cover":"/hawk-recomp-portal/images/covers/SSX_Tricky.png","relatedUrl":null,"projectNote":"Decompilação em andamento.","slug":"ssx-tricky"},
+  {"title":"SSX 3","platforms":"PS2 / Xbox / GameCube","priority":"Alta","img":null,"url":"https://github.com/ssxdecomp/ssx3","status":"Decompilação","cover":"/hawk-recomp-portal/images/covers/SSX_3.png","relatedUrl":null,"projectNote":"Decompilação, não port pronto.","slug":"ssx-3"},
+  {"title":"Def Jam: Fight for NY","platforms":"PS2 / Xbox / GameCube","priority":"Alta","img":null,"url":"https://github.com/vyanhursky/DefJamFFNY-recomp","status":"Recompilação","cover":"/hawk-recomp-portal/images/covers/Def_Jam_Fight_for_NY.png","relatedUrl":null,"projectNote":"Port Xbox com recompilação estática.","slug":"def-jam-fight-for-ny"},
+  {"title":"BLACK","platforms":"PS2 / Xbox","priority":"Referência","img":"black-art","url":"https://github.com/TGP482/BLACK-XBERecomp","status":"Community Port","cover":"/hawk-recomp-portal/images/covers/Black.png","slug":"black"},
+  {"title":"Burnout 3: Takedown","platforms":"PS2 / Xbox","priority":"Referência","img":null,"url":"https://github.com/sp00nznet/burnout3","status":"Recompilação","cover":"/hawk-recomp-portal/images/covers/Burnout_3_Takedown.png","relatedUrl":null,"projectNote":"Recompilação Xbox para Windows.","slug":"burnout-3-takedown"},
+  {"title":"God of War","platforms":"PS2","priority":"Média","img":null,"url":"https://github.com/KIexster/god-of-war-recomp","status":"Recompilação","cover":"/hawk-recomp-portal/images/covers/God_of_War.png","relatedUrl":null,"projectNote":"Port PS2 por recompilação.","slug":"god-of-war"},
+  {"title":"God of War II","platforms":"PS2","priority":"Média","img":null,"url":"https://github.com/andrebrumdev/gow2-recomp","status":"Recompilação","cover":"/hawk-recomp-portal/images/covers/God_of_War_2.png","relatedUrl":null,"projectNote":"Versão God of War II HD de PS3 para Mac, não a de PS2.","slug":"god-of-war-ii"},
+  {"title":"Dragon Ball Z: Budokai Tenkaichi 3","platforms":"PS2 / Wii","priority":"Média","img":null,"url":"https://github.com/z3xox/BT3-Recomp","status":"Recompilação","cover":"/hawk-recomp-portal/images/covers/Dragon_Ball_Z_Budokai_Tenkaichi_3.png","relatedUrl":null,"projectNote":"Recompilação PS2.","slug":"dragon-ball-z-budokai-tenkaichi-3"},
+  {"title":"WWE SmackDown! Here Comes the Pain","platforms":"PS2","priority":"Média","img":null,"url":null,"status":"Projeto de outro jogo","cover":"/hawk-recomp-portal/images/covers/WWE_SmackDown_Here_Comes_the_Pain.png","relatedUrl":null,"projectNote":"É SmackDown vs. Raw 2010, não Here Comes the Pain.","slug":"wwe-smackdown-here-comes-the-pain"},
+  {"title":"Urban Reign","platforms":"PS2","priority":"Média","img":null,"url":"https://github.com/thiagordsfx/urban-reign-recomp","status":"Recompilação","cover":"/hawk-recomp-portal/images/covers/Urban_Reign.png","relatedUrl":null,"projectNote":"Port PS2 por recompilação.","slug":"urban-reign"},
+  {"title":"Gran Turismo 4","platforms":"PS2","priority":"Referência","img":null,"url":"https://github.com/gustavocanepa/gt4-decomp","status":"Decompilação","cover":"/hawk-recomp-portal/images/covers/Gran_Turismo_4.png","relatedUrl":null,"projectNote":"Decompilação do motor.","slug":"gran-turismo-4"},
+  {"title":"Ninja Gaiden Black","platforms":"Xbox","priority":"Média","img":null,"url":"https://github.com/mehmetalinya/DECOMP__Ninja","status":"Decompilação","cover":"/hawk-recomp-portal/images/covers/Ninja_Gaiden_Black.png","relatedUrl":null,"projectNote":"Repositório de decompilação Ninja Gaiden Black e NG2.","slug":"ninja-gaiden-black"},
+  {"title":"Fable II","platforms":"Xbox 360","priority":"Média","img":null,"url":"https://github.com/himdo/Fable-2-Recomp","status":"Recompilação","cover":"/hawk-recomp-portal/images/covers/Fable_2.png","relatedUrl":null,"projectNote":"Projeto com código, ferramentas e launcher; jogabilidade não aferida.","slug":"fable-ii"},
+  {"title":"Skate 3","platforms":"Xbox 360","priority":"Referência","img":null,"url":"https://github.com/mchughalex/skate3recomp","status":"Recompilação","cover":"/hawk-recomp-portal/images/covers/Skate.png","relatedUrl":null,"projectNote":"Recompilação nativa com releases.","slug":"skate-3"},
+  {"title":"Sonic Unleashed","platforms":"Xbox 360","priority":"Referência","img":null,"url":"https://github.com/hedge-dev/UnleashedRecomp","status":"Recompilação","cover":"/hawk-recomp-portal/images/covers/Sonic_Unleashed.png","relatedUrl":null,"projectNote":"Port Xbox 360 para PC.","slug":"sonic-unleashed"},
+  {"title":"Dante\u0027s Inferno","platforms":"PS3 / Xbox 360","priority":"Média","img":null,"url":"https://github.com/florinp93/hells-gate-recomp","status":"Recompilação","cover":"/hawk-recomp-portal/images/covers/Dantes_Inferno.png","relatedUrl":null,"projectNote":"Port Xbox 360 via ReXGlue.","slug":"dante-s-inferno"},
+  {"title":"The Simpsons Game","platforms":"PS3 / Xbox 360","priority":"Média","img":null,"url":"https://github.com/YesterMester/TheSimpsonsGameRecomp","status":"Recompilação","cover":"/hawk-recomp-portal/images/covers/The_Simpsons_Game.png","relatedUrl":null,"projectNote":"Recompilação Xbox 360 em progresso.","slug":"the-simpsons-game"},
+  {"title":"Mario Kart Wii","platforms":"Wii","priority":"Média","img":null,"url":"https://github.com/snailspeed3/mkw","status":"Decompilação","cover":"/hawk-recomp-portal/images/covers/Mario_Kart_Wii.png","relatedUrl":null,"projectNote":"Não é recompilação nativa para PC.","slug":"mario-kart-wii"},
+  {"title":"Banjo-Kazooie","platforms":"N64","priority":"Referência","img":null,"url":"https://github.com/BanjoRecomp/BanjoRecomp","status":"Recompilação","cover":"/hawk-recomp-portal/images/covers/Banjo_Kazooie.png","relatedUrl":null,"projectNote":"Port N64 para PC.","slug":"banjo-kazooie"},
+  {"title":"The Legend of Zelda: Majora\u0027s Mask","platforms":"N64","priority":"Referência","img":null,"url":"https://github.com/Zelda64Recomp/Zelda64Recomp","status":"Recompilação","cover":"/hawk-recomp-portal/images/covers/Zelda_Majoras_Mask.png","relatedUrl":null,"projectNote":"Port N64 para PC.","slug":"the-legend-of-zelda-majora-s-mask"},
+  {"title":"Need for Speed: Underground 2","platforms":"PS2 / Xbox / GameCube","priority":"Baixa","img":null,"url":"https://github.com/codepdbh/nfsu2-recompiled","status":"Recompilação","cover":"/hawk-recomp-portal/images/covers/Need_For_Speed_Underground_2.png","relatedUrl":null,"projectNote":"Recompilação x86 Windows.","slug":"need-for-speed-underground-2"},
+  {"title":"The Warriors","platforms":"PS2 / Xbox","priority":"Média","img":null,"url":null,"status":"Projeto de outro jogo","cover":"/hawk-recomp-portal/images/covers/The_Warriors.png","relatedUrl":null,"projectNote":"É Guitar Hero: Warriors of Rock.","slug":"the-warriors"},
+  {"title":"True Crime: New York City","platforms":"PS2 / Xbox","priority":"Média","img":null,"url":null,"status":"Exploit / ferramenta","cover":"/hawk-recomp-portal/images/covers/True_Crime_New_York_City.png","relatedUrl":null,"projectNote":"Exploit de savegame GameCube, não port.","slug":"true-crime-new-york-city"},
+  {"title":"Spider-Man: Web of Shadows","platforms":"PS3 / Xbox 360","priority":"Baixa","img":null,"url":"https://github.com/haruse23/Spider-Man-Web-of-Shadows","status":"Ferramentas","cover":"/hawk-recomp-portal/images/covers/Spider_Man_Web_of_Shadows.png","relatedUrl":null,"projectNote":"Ferramentas do jogo, não recompilação.","slug":"spider-man-web-of-shadows"},
+  {"title":"Tony Hawk\u0027s Underground","platforms":"PS2 / Xbox / GameCube","priority":"Baixa","img":null,"url":null,"status":"Projeto de outro jogo","cover":"/hawk-recomp-portal/images/covers/Tony_Hawks_Underground.png","relatedUrl":null,"projectNote":"É Tony Hawk\u0027s Pro Skater 3 para N64.","slug":"tony-hawk-s-underground"},
+  {"title":"Driver: Parallel Lines","platforms":"PS2 / Xbox","priority":"Baixa","img":null,"url":"https://github.com/ermaccer/DPLHook","status":"Mod / ferramenta","cover":"/hawk-recomp-portal/images/covers/Driver_Parallel_Lines.png","relatedUrl":null,"projectNote":"Câmera livre e recursos de mod, não recompilação.","slug":"driver-parallel-lines"},
+];
+---
+<a class="skip" href="#main">Skip to content</a>
+<header class="header"><div class="bar shell"><a class="brand" href={pt?portuguese:home} aria-label="HAWK Recomp home"><img class="brand-logo-official" src="/hawk-recomp-portal/images/hawk-logo-official.png" alt="HAWK Recomp" width="1280" height="1280" /></a><nav aria-label="Main navigation"><a class="current" href={pt?portuguese:home}>{labels.home}</a><a href="#projects">{labels.projects}</a><a href="#research">{labels.research}</a><a href="#community">{labels.community}</a><a href="#about">{labels.about}</a><a href={pt ? `${base}/pt-br/launcher/` : `${base}/launcher/`}>{pt ? "Launcher" : "Launcher"}</a></nav><div class="tools"><label class="search"><svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="10.8" cy="10.8" r="7"/><path d="m16 16 5 5"/></svg><input id="search" type="search" placeholder={labels.search} aria-label={labels.search}/><kbd>Ctrl K</kbd></label><details class="lang"><summary aria-label="Select language"><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><path d="M3 12h18M12 3c-6 5-6 13 0 18M12 3c6 5 6 13 0 18"/></svg>{pt?'PT-BR':'EN-US'}<span>⌄</span></summary><div class="lang-options"><a href={home} aria-current={!pt?'page':undefined}>English (US)</a><a href={portuguese} aria-current={pt?'page':undefined}>Português (Brasil)</a></div></details><a class="git" href={github} target="_blank" rel="noopener noreferrer" aria-label="GitHub"><svg viewBox="0 0 24 24" fill="currentColor"><path d="M12 1a11 11 0 0 0-3.48 21.44c.55.11.75-.24.75-.53v-2c-3.06.66-3.7-1.3-3.7-1.3-.5-1.27-1.23-1.61-1.23-1.61-1-.68.08-.67.08-.67 1.1.08 1.68 1.13 1.68 1.13.98 1.66 2.57 1.18 3.2.9.1-.72.38-1.2.69-1.47-2.44-.28-5.01-1.22-5.01-5.43 0-1.2.43-2.18 1.13-2.95-.11-.28-.49-1.4.11-2.91 0 0 .92-.3 3.01 1.12a10.5 10.5 0 0 1 5.48 0c2.08-1.42 3-1.12 3-1.12.6 1.51.22 2.63.11 2.91.7.77 1.13 1.75 1.13 2.95 0 4.22-2.57 5.14-5.02 5.42.4.34.75 1 .75 2.04v2.65c0 .29.2.64.76.53A11 11 0 0 0 12 1Z"/></svg></a></div></div></header>
+<main id="main"><section class="hero" id="featured"><div class="hero-background" style={`background-image:linear-gradient(90deg,#060b11 0%,rgba(6,11,17,.96) 18%,rgba(6,11,17,.76) 42%,rgba(6,11,17,.1) 75%),url('${image('hero-art')}')`}></div><div class="shell hero-content"><div class="kicker">{labels.featured}</div><p class="platform">{labels.heroLabel}</p><img class="fifa-logo-image" src={image("fifa-street2-logo")} alt="FIFA Street 2" width="1905" height="808" fetchpriority="high" /><h1>{labels.headline}</h1><p class="hero-desc">{labels.intro}</p><div class="hero-buttons"><a class="cta" href="https://github.com/jv36/fifastreet2-recomp" target="_blank" rel="noopener noreferrer">{labels.view}<span>→</span></a><a class="secondary" href="#about">{labels.learn}</a></div><div class="hero-meta"><span>♧ Original Xbox</span><span>⊞ Windows x64</span><span>⚗ {labels.exp}</span><a href="https://github.com/jv36/fifastreet2-recomp" target="_blank" rel="noopener noreferrer">↗ GitHub</a></div></div><div class="dots" aria-hidden="true"><span></span><span></span><span></span></div></section>
+<section class="featured shell" id="projects"><div class="sectionhead"><h2>{labels.featureTitle}</h2><a href="#projects">{labels.viewAll} <span>→</span></a></div><div class="catalogue-heading">
+  <p>{pt ? 'Catálogo de interesse da comunidade — prioridade editorial, não disponibilidade para jogar.' : 'Community interest catalogue — editorial priority, not a playable-games list.'}</p>
+  <label for="priority-filter">{pt ? 'Prioridade' : 'Priority'}
+    <select id="priority-filter" aria-label={pt ? 'Filtrar prioridade' : 'Filter priority'}>
+      <option value="all">{pt ? 'Todas' : 'All'}</option>
+      <option value="Alta">{pt ? 'Alta' : 'High'}</option>
+      <option value="Média">{pt ? 'Média' : 'Medium'}</option>
+      <option value="Baixa">{pt ? 'Baixa' : 'Low'}</option>
+      <option value="Referência">{pt ? 'Referência' : 'Reference'}</option>
+    </select>
+  </label>
+</div>
+<div class="project-grid">
+  {games.map((g, i) => (
+    <article class={`project-card catalogue-card ${i === 0 ? 'selected' : ''}`} data-title={`${g.title} ${g.platforms}`.toLowerCase()} data-priority={g.priority}>
+      {(g.cover || g.img) ? (
+        <img src={g.cover || image(g.img)} alt={g.title} loading="lazy" />
+      ) : (
+        <div class="catalogue-placeholder" aria-hidden="true"><span>{String(i + 1).padStart(2, '0')}</span><strong>{g.title}</strong></div>
+      )}
+      <div class="card-body">
+        <h3><a class="hawk-detail-link" href={`${import.meta.env.BASE_URL.replace(/\/$/, "")}/${pt ? "pt-br/" : ""}games/${g.slug}/`}>{g.title}</a></h3>
+        <span class="catalogue-priority">{pt ? 'Prioridade' : 'Priority'}: {pt ? g.priority : ({'Alta':'High','Média':'Medium','Baixa':'Low','Referência':'Reference'}[g.priority])}</span>
+        <small>{g.platforms}</small>
+        <small class="catalogue-note" title={g.projectNote}>{g.projectNote}</small>
+        <span class="catalogue-state">{g.status ? (g.status === 'Community Port' ? (pt ? 'Port comunitário' : 'Community port') : g.status === 'Experimental' ? 'Experimental' : g.status) : (pt ? 'Port não verificado' : 'Port not verified')}</span>
+        {g.url ? <a class="catalogue-source" href={g.url} target="_blank" rel="noopener noreferrer">{pt ? 'Ver repositório ↗' : 'View repository ↗'}</a> : (g.relatedUrl ? <a class="catalogue-source" href={g.relatedUrl} target="_blank" rel="noopener noreferrer">{pt ? 'Projeto relacionado (outro jogo/edição) ↗' : 'Related project (other game/edition) ↗'}</a> : null)}
+      </div>
+    </article>
+  ))}
+</div>
+<p id="no-results" hidden>{labels.noResults}</p></section>
+<section class="editorial shell" id="about"><article class="editorial-card"><img src={image('mission-art')} alt="" loading="lazy"/><div><span class="caption">{labels.missionLabel}</span><h2>{labels.missionTitle}</h2><p>{labels.missionDesc}</p><a href="https://github.com/hawk-recomp" target="_blank" rel="noopener noreferrer">{labels.missionLink} →</a></div></article><article class="editorial-card" id="research"><img src={image('research-art')} alt="" loading="lazy"/><div><span class="caption">{labels.researchLabel}</span><h2>{labels.researchTitle}</h2><p>{labels.researchDesc}</p><a href="https://github.com/jv36/fifastreet2-recomp" target="_blank" rel="noopener noreferrer">{labels.researchLink} →</a></div></article><article class="editorial-card" id="community"><img src={image('community-art')} alt="" loading="lazy"/><div><span class="caption">{labels.communityLabel}</span><h2>{labels.communityTitle}</h2><p>{labels.communityDesc}</p><a href={github} target="_blank" rel="noopener noreferrer">{labels.join} →</a></div></article></section>
+<section class="proof shell"><div><b><img src="/hawk-recomp-portal/images/icon-projetos-reais.png" alt="" loading="lazy" /></b><p>{labels.proof1}<small>{labels.proof1b}</small></p></div><div><b><img src="/hawk-recomp-portal/images/icon-comunidade.png" alt="" loading="lazy" /></b><p>{labels.proof2}<small>{labels.proof2b}</small></p></div><div><b><img src={image('icon-projects')} alt="" loading="lazy" /></b><p>{labels.proof3}<small>{labels.proof3b}</small></p></div></section></main><footer><div class="shell footer-row"><span>© {new Date().getFullYear()} HAWK RECOMP</span><p>{labels.disclaimer}</p><a href={github}>GitHub ↗</a></div></footer>
+<script>
+  const input = document.querySelector<HTMLInputElement>('#search');
+  const filter = document.querySelector<HTMLSelectElement>('#priority-filter');
+  const cards = [...document.querySelectorAll<HTMLElement>('.project-card')];
+  const noResults = document.querySelector<HTMLElement>('#no-results');
+  function updateCatalog() {
+    const query = (input?.value || '').trim().toLocaleLowerCase();
+    const priority = filter?.value || 'all';
+    let visible = 0;
+    cards.forEach(card => {
+      const matchesSearch = (card.dataset.title || '').toLocaleLowerCase().includes(query);
+      const matchesPriority = priority === 'all' || card.dataset.priority === priority;
+      card.hidden = !(matchesSearch && matchesPriority);
+      if (!card.hidden) visible++;
+    });
+    if (noResults) noResults.hidden = visible > 0;
+  }
+  input?.addEventListener('input', updateCatalog);
+  filter?.addEventListener('change', updateCatalog);
+  window.addEventListener('keydown', e => {
+    if ((e.ctrlKey || e.metaKey) && e.key.toLowerCase() === 'k') {
+      e.preventDefault();
+      input?.focus();
+    }
+  });
+</script>
+<style>
+:global(*){box-sizing:border-box}:global(html){scroll-behavior:smooth}:global(body){margin:0;background:#070d15;color:#f5f7fb;font-family:Inter,Segoe UI,Arial,sans-serif}:global(a){text-decoration:none;color:inherit}:global(button),:global(input){font:inherit}:global(.shell){width:min(1460px,calc(100% - 88px));margin-inline:auto}.skip{position:absolute;left:-9999px}.skip:focus{left:12px;top:12px;z-index:100;background:#fac92c;color:#000;padding:12px}.header{background:#080e17;border-bottom:1px solid #233145;position:relative;z-index:5}.bar{height:78px;display:flex;align-items:center;justify-content:space-between;gap:22px}.brand{display:flex;align-items:center;gap:12px;flex-shrink:0}.brand img{width:70px;height:70px;object-fit:contain;border-radius:50%}.brandwords div{font:900 32px/.95 'Barlow Condensed',Impact,sans-serif;letter-spacing:-.015em;font-style:italic}.brandwords div span{color:#ffc623}.brandwords small{font-size:10px;letter-spacing:.14em;font-weight:750;white-space:nowrap}.bar nav{height:100%;display:flex;gap:34px;align-items:center}.bar nav a{font-size:13px;height:100%;display:grid;place-items:center;position:relative;white-space:nowrap}.bar nav a:hover,.bar nav a.current{color:#ffcf33}.bar nav .current:after{content:'';position:absolute;bottom:16px;left:0;right:0;background:#ffcf33;height:3px}.tools{display:flex;align-items:center;gap:16px}.search{height:43px;border:1px solid #263749;border-radius:10px;display:flex;align-items:center;gap:11px;padding:0 11px;min-width:230px;width:290px}.search svg,.lang svg{width:19px;height:19px;fill:none;stroke:currentColor;stroke-width:2}.search input{border:0;outline:0;min-width:0;width:100%;background:none;color:white;font-size:12px}.search kbd{font-size:10px;color:#768ba7;background:#1b2738;padding:3px 5px;border-radius:4px;white-space:nowrap}.lang{position:relative}.lang summary{list-style:none;display:flex;align-items:center;gap:12px;border:1px solid #263749;border-radius:10px;padding:11px 13px;font-size:12px;cursor:pointer;white-space:nowrap}.lang summary::-webkit-details-marker{display:none}.lang-options{position:absolute;top:calc(100% + 8px);right:0;background:#111e2d;border:1px solid #324152;min-width:192px;padding:6px;border-radius:10px;box-shadow:0 18px 30px #0009}.lang-options a{display:block;padding:11px;border-radius:6px;font-size:12px}.lang-options a:hover,.lang-options [aria-current]{background:#27364a;color:#ffce37}.git{width:43px;height:43px;border-radius:50%;display:grid;place-items:center;border:1px solid #263749}.git svg{width:22px;height:22px}.hero{position:relative;min-height:450px;border-bottom:1px solid #263445;overflow:hidden}.hero-background{position:absolute;inset:0;background-size:cover;background-position:center center;filter:saturate(1.05)}.hero-content{position:relative;padding-block:34px 45px}.kicker,.caption{font-size:10px;font-weight:900;letter-spacing:.15em;color:#ffd02b}.kicker:before{content:'';display:inline-block;height:18px;width:4px;border-radius:2px;background:#ffd02b;vertical-align:middle;margin-right:13px}.platform{font-size:10px;letter-spacing:.22em;color:#a9bbcf;font-weight:700;margin-top:19px}.fifa-logo{font:900 italic clamp(49px,5.5vw,81px)/.93 'Barlow Condensed',Impact,sans-serif;letter-spacing:-.045em;text-shadow:0 5px 12px #000;max-width:485px;transform:skew(-4deg);margin:13px 0 18px}.fifa-logo em{color:white;font-style:inherit}.fifa-logo b{color:#e83e24;font-size:1.3em}.hero h1{font-size:clamp(23px,2.2vw,30px);margin:6px 0;color:white;max-width:650px}.hero-desc{font-size:14px;line-height:1.6;color:#bbc8d5;max-width:525px;margin:6px 0 17px}.hero-buttons{display:flex;gap:13px;align-items:center}.cta,.secondary{min-width:145px;padding:13px 20px;border-radius:8px;text-align:center;font-size:13px;font-weight:800}.cta{background:#ffcd34;color:#071018;display:flex;align-items:center;justify-content:space-between;gap:16px}.secondary{background:#08101b91;border:1px solid #c3cedc}.hero-meta{display:flex;gap:27px;flex-wrap:wrap;margin-top:22px;color:#a1b1c2;font-size:11px}.hero-meta a:hover{color:#ffd23c}.dots{position:absolute;right:6%;bottom:21px;display:flex;gap:7px}.dots span{height:7px;width:7px;background:#586171;border-radius:100%}.dots span:first-child{background:#ffd037}.featured{padding-block:25px 37px}.sectionhead{display:flex;align-items:center;justify-content:space-between;margin-bottom:18px}.sectionhead h2{font-size:24px;margin:0;letter-spacing:-.03em}.sectionhead h2:before{content:'';width:5px;height:26px;background:#ffc92c;border-radius:2px;display:inline-block;vertical-align:middle;margin-right:15px}.sectionhead a{font-size:12px;color:#80bfff}.sectionhead a span{margin-left:12px}.project-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:18px}.project-card{height:145px;position:relative;display:flex;align-items:center;gap:18px;background:#0d1520;border:1px solid #304153;border-radius:11px;overflow:hidden;padding:7px 48px 7px 7px;min-width:0}.project-card.selected,.project-card:hover{border-color:#ffd02f;box-shadow:0 0 0 1px #ffd02f40}.project-card[hidden]{display:none}.project-card img{height:100%;width:155px;object-fit:cover;border-radius:7px;flex-shrink:0
+    object-fit: contain;
+    background: #080d15;
+  }.card-body{min-width:0}.card-body h3{font-size:18px;margin:0 0 12px}.pill{font-size:11px;border-radius:4px;padding:6px 9px;background:#392e10;color:#ffcf43;display:inline-block}.pill.community{background:#132d47;color:#8bc6ff}.card-body small{display:block;font-size:11px;color:#9dacbf;margin-top:12px}.circle-arrow{position:absolute;right:12px;top:50%;transform:translateY(-50%);width:35px;height:35px;display:grid;place-items:center;font-size:28px;border-radius:50%;background:#202c3d}.editorial{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:18px;padding-block:18px 36px}.editorial-card{position:relative;min-height:230px;border:1px solid #2d3f51;border-radius:11px;overflow:hidden;background:#111e2b}.editorial-card:before{content:'';position:absolute;inset:0;background:linear-gradient(90deg,#09111af5 4%,#09111aa8 60%,#09111a40)}.editorial-card img{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;opacity:.63}.editorial-card>div{position:relative;padding:25px 20px 20px 34%;display:flex;flex-direction:column;align-items:start;min-height:230px}.editorial-card h2{font-size:20px;line-height:1.15;margin:10px 0 7px}.editorial-card p{font-size:11px;line-height:1.65;color:#c2cfdb;margin:0 0 12px}.editorial-card a{margin-top:auto;border:1px solid #9aaec2;padding:10px 12px;border-radius:7px;font-size:11px;font-weight:800}.proof{display:grid;grid-template-columns:repeat(3,1fr);gap:20px;padding-block:23px;border-top:1px solid #253345}.proof>div{display:flex;align-items:center;gap:17px}.proof b{display:grid;place-items:center;height:43px;width:43px;border-radius:50%;background:#1a293a;font-size:21px}.proof p{font-size:12px;margin:0}.proof small{display:block;color:#a3b1c3;font-size:11px;margin-top:6px}footer{border-top:1px solid #263547;color:#8497ad;font-size:11px}.footer-row{display:flex;gap:25px;align-items:center;justify-content:space-between;padding-block:25px}.footer-row p{max-width:700px;text-align:center;line-height:1.5;margin:0}
+@media(max-width:1280px){.bar nav{gap:17px}.search{width:210px;min-width:150px}.editorial-card>div{padding-left:26%}}@media(max-width:1080px){.bar{height:auto;min-height:72px;flex-wrap:wrap;padding-block:8px}.bar nav{order:3;width:100%;justify-content:center;height:35px}.bar nav a.current:after{bottom:0}.project-card img{width:110px}.editorial{grid-template-columns:1fr}.editorial-card>div{padding-left:38%;min-height:190px}.editorial-card{min-height:190px}}
+@media(max-width:700px){:global(.shell){width:calc(100% - 32px)}.brand img{width:49px;height:49px}.brandwords div{font-size:25px}.brandwords small{font-size:8px}.bar{gap:10px}.bar nav{overflow:auto;justify-content:flex-start;gap:20px}.bar nav a{font-size:12px}.tools{gap:8px}.search{order:5;width:100%;min-width:100%;height:36px}.search kbd{display:none}.lang summary{padding:8px;gap:5px}.git{width:36px;height:36px}.hero{min-height:510px}.hero-background{background-position:60% center!important;opacity:.64}.hero-content{padding-block:32px 50px}.hero h1{font-size:26px;max-width:370px}.hero-desc{max-width:350px}.hero-meta{gap:13px;font-size:10px}.fifa-logo{font-size:58px}.project-grid{grid-template-columns:1fr}.project-card{height:118px}.project-card img{width:118px}.sectionhead h2{font-size:21px}.sectionhead a{font-size:11px}.editorial-card>div{padding-left:34%}.proof{grid-template-columns:1fr;gap:18px}.footer-row{flex-direction:column;text-align:center}}@media(max-width:390px){.brandwords div{font-size:22px}.brand img{width:40px;height:40px}.project-card img{width:95px}.card-body h3{font-size:15px}.editorial-card>div{padding-left:26%;padding-right:10px}}@media(prefers-reduced-motion:reduce){:global(html){scroll-behavior:auto}}
+/* HAWK V4 - asset-specific adjustments */
+.hero { min-height: clamp(540px, 42vw, 690px); }
+.hero-background {
+  background-color: #060b11;
+  background-repeat: no-repeat;
+  background-size: cover;
+  background-position: center 40%;
+}
+.hero-content { padding-block: clamp(44px, 6vw, 95px) 60px; }
+.fifa-logo-image {
+  display: block;
+  width: clamp(240px, 31vw, 460px);
+  max-width: 100%;
+  height: auto;
+  margin: 20px 0 12px;
+  object-fit: contain;
+  object-position: left center;
+  filter: drop-shadow(0 6px 18px rgba(0,0,0,.48));
+}
+/* BLACK is panoramic; preserve its entire original composition. */
+.project-card:has(img[src*="black-art"]) img {
+  object-fit: contain;
+  object-position: center;
+  background: #080d15;
+}
+@media (max-width: 700px) {
+  .hero { min-height: 540px; }
+  .hero-background {
+    background-size: auto 100%;
+    background-position: 53% center !important;
+    opacity: .56;
+  }
+  .hero-content { padding-block: 36px 48px; }
+  .fifa-logo-image { width: min(78vw, 330px); margin: 18px 0 10px; }
+}
+/* HAWK V5 visual */
+/* Hero covers the first viewport beneath the desktop header. */
+@media (min-width: 1081px) {
+  .hero {
+    min-height: calc(100svh - 78px);
+    display: flex;
+    align-items: center;
+  }
+  .hero-content { width: 100%; padding-block: 52px 64px; }
+}
+/* Editorial art chosen by the project owner */
+.editorial-card img { object-fit: cover; object-position: center; opacity: .82; }
+.editorial-card:before { z-index: 1; background: linear-gradient(90deg,rgba(5,11,19,.30),rgba(5,11,19,.76) 37%,rgba(5,11,19,.90)); }
+.editorial-card > div { z-index: 2; }
+/* Balanced, centered credibility strip */
+.proof { display: flex; align-items: center; justify-content: center; flex-wrap: wrap; gap: clamp(30px,5vw,84px); }
+.proof > div { flex: 0 1 auto; min-width: 190px; justify-content: center; }
+.proof b { overflow: hidden; flex: 0 0 50px; height: 50px; width: 50px; border-radius: 50%; background: #172435; }
+.proof b img { display: block; width: 34px; height: 34px; object-fit: contain; }
+@media (min-width: 701px) and (max-width: 1080px) {
+  .hero { min-height: calc(100svh - 115px); display:flex; align-items:center; }
+  .hero-content { width: 100%; }
+}
+@media (max-width: 700px) {
+  .hero { min-height: max(690px, calc(100svh - 80px)); display: flex; align-items: center; }
+  .hero-content { width: 100%; padding-block: 40px 70px; }
+  .proof { justify-content: center; gap: 20px; }
+  .proof > div { min-width: min(100%,270px); justify-content: flex-start; }
+  .editorial-card:before { background: linear-gradient(90deg,rgba(5,11,19,.45),rgba(5,11,19,.90)); }
+}
+
+  
+
+
+
+/* HAWK V5.6 START */
+
+.brand {
+  display: flex;
+  align-items: center;
+  gap: 0 !important;
+}
+
+.brandwords {
+  display: none !important;
+}
+
+.brand .brand-logo-official {
+  display: block;
+  width: clamp(220px, 15vw, 320px);
+  height: auto;
+  max-height: none;
+  object-fit: contain;
+  background: transparent;
+  box-shadow: none;
+  border: none;
+}
+
+/* Header mais alto para acomodar o logo */
+.bar {
+  min-height: 132px;
+  padding-top: 12px;
+  padding-bottom: 12px;
+}
+
+.bar nav a {
+  text-transform: uppercase;
+  letter-spacing: 0.045em;
+}
+
+/* Ajuste do shell do header */
+.bar .shell {
+  align-items: center;
+}
+
+/* Mobile */
+@media (max-width: 900px) {
+  .brand .brand-logo-official {
+    width: 190px;
+  }
+
+  .bar {
+    min-height: 110px;
+  }
+}
+
+@media (max-width: 700px) {
+  .brand .brand-logo-official {
+    width: 160px;
+  }
+
+  .bar {
+    min-height: 96px;
+    padding-top: 8px;
+    padding-bottom: 8px;
+  }
+}
+
+/* HAWK V5.6 END */
+
+/* HAWK V5.7 START */
+
+/* Header com altura proporcional */
+.header .bar {
+    height: 170px !important;
+    min-height: 170px !important;
+    padding-top: 12px !important;
+    padding-bottom: 12px !important;
+    overflow: visible;
+}
+
+/* Logo oficial completo */
+.brand .brand-logo-official {
+    display: block;
+    width: 175px !important;
+    height: 145px !important;
+    max-height: 145px !important;
+    object-fit: contain !important;
+    object-position: center;
+    border-radius: 0 !important;
+}
+
+/* Alinhamento vertical */
+.header .bar,
+.header .brand,
+.header .tools {
+    align-items: center;
+}
+
+/* Hero ocupa o restante da tela */
+@media (min-width: 1081px) {
+    .hero {
+        min-height: calc(100svh - 170px) !important;
+    }
+}
+
+/* Tablet */
+@media (min-width: 701px) and (max-width: 1080px) {
+    .header .bar {
+        height: auto !important;
+        min-height: 155px !important;
+    }
+
+    .brand .brand-logo-official {
+        width: 145px !important;
+        height: 120px !important;
+    }
+}
+
+/* Mobile */
+@media (max-width: 700px) {
+    .header .bar {
+        height: auto !important;
+        min-height: 115px !important;
+    }
+
+    .brand .brand-logo-official {
+        width: 105px !important;
+        height: 100px !important;
+    }
+}
+
+/* HAWK V5.7 END */
+
+/* HAWK V5.8 START */
+
+/*
+ * O elemento possui as duas classes:
+ * .shell.hero-content
+ *
+ * Por isso ele precisa herdar a largura do container
+ * principal, e nao receber width:100% ou max-width:650px.
+ */
+
+.hero > .shell.hero-content {
+    position: relative;
+    box-sizing: border-box;
+
+    width: min(1460px, calc(100% - 88px)) !important;
+    max-width: 1460px !important;
+
+    margin-left: auto !important;
+    margin-right: auto !important;
+
+    padding-left: 0 !important;
+    padding-right: 0 !important;
+}
+
+/* Limitar somente o texto, nao o container */
+.hero-content h1,
+.hero-content .hero-desc {
+    max-width: 650px;
+}
+
+/* Tablet */
+@media (min-width: 701px) and (max-width: 1080px) {
+    .hero > .shell.hero-content {
+        width: calc(100% - 48px) !important;
+    }
+}
+
+/* Mobile */
+@media (max-width: 700px) {
+    .hero > .shell.hero-content {
+        width: calc(100% - 32px) !important;
+    }
+
+    .hero-content h1,
+    .hero-content .hero-desc {
+        max-width: 100%;
+    }
+}
+
+/* HAWK V5.8 END */
+
+
+/* HAWK CATALOG V6.1 */
+.catalogue-heading { display:flex; justify-content:space-between; align-items:center; gap:18px; margin:8px 0 24px; }
+.catalogue-heading p {color:#acbacb;font-size:12px;line-height:1.6;margin:0}
+.catalogue-heading label {display:flex;gap:10px;align-items:center;color:#a8b9ca;font-size:12px;white-space:nowrap}
+.catalogue-heading select {background:#132132;border:1px solid #314359;color:#eef2f8;border-radius:7px;padding:10px}
+.project-grid {display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:16px}
+.project-card.catalogue-card {height:175px;padding:9px;gap:13px;display:flex;align-items:stretch;min-width:0}
+.project-card.catalogue-card[hidden] {display:none}
+.catalogue-card > img {height:100%;width:115px;min-width:115px;object-fit:contain;flex-shrink:0}
+.catalogue-placeholder {height:100%;width:115px;min-width:115px;display:flex;flex-direction:column;justify-content:space-between;overflow:hidden;padding:10px;border-radius:7px;background:linear-gradient(150deg,#192f45,#0c1625 70%);border:1px solid #293b50}
+.catalogue-placeholder span {color:#fac92c;font-size:12px;font-weight:800}
+.catalogue-placeholder strong {color:#cbd6e5;font-size:13px;line-height:1.2;overflow-wrap:anywhere}
+.catalogue-card .card-body {display:flex;flex-direction:column;align-items:flex-start;gap:6px;min-width:0}
+.catalogue-card .card-body h3 {font-size:15px;line-height:1.18;margin:0;overflow-wrap:anywhere}
+.catalogue-card .card-body small {margin:0;color:#9db1c6}
+.catalogue-priority {font-size:10px;color:#ffce37}
+.catalogue-state {font-size:10px;color:#aab9cd}
+.catalogue-source {font-size:11px;color:#80bfff;margin-top:auto;text-decoration:underline}
+@media (max-width:1240px){.project-grid{grid-template-columns:repeat(2,minmax(0,1fr))}}
+@media (max-width:700px){.project-grid{grid-template-columns:1fr}.catalogue-heading{align-items:flex-start;flex-direction:column}.project-card.catalogue-card{height:165px}}
+
+/* HAWK V6.3 - Capas fornecidas pelo usuario: 117x157 */
+.catalogue-card > img {
+    display: block;
+    width: 117px;
+    height: 157px;
+    min-width: 117px;
+    min-height: 157px;
+    flex-shrink: 0;
+    border-radius: 6px;
+    object-fit: contain;
+}
+/* HAWK V6.5 - links e escopo dos repositorios */
+.catalogue-card .catalogue-note {font-size:10px;line-height:1.3;color:#93a8ba;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden}
+.catalogue-card .catalogue-source {margin-top:auto}
+/* HAWK V6.6 - paginas individuais */
+.hawk-detail-link{color:inherit;text-decoration:none}.hawk-detail-link:hover{color:#e4bc51;text-decoration:underline}
+
+/* HAWK V7.0: keyboard access and reduced-motion support */
+:global(a:focus-visible),:global(button:focus-visible),:global(input:focus-visible),:global(select:focus-visible),:global(summary:focus-visible){outline:3px solid #ffce49;outline-offset:3px}
+@media(prefers-reduced-motion:reduce){:global(*),:global(*::before),:global(*::after){animation-duration:.01ms!important;transition-duration:.01ms!important;scroll-behavior:auto!important}}
+</style>
+

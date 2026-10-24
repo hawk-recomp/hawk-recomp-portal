@@ -1,0 +1,125 @@
+---
+interface Game {
+  title: string;
+  slug: string;
+  platforms: string;
+  priority: string;
+  cover: string;
+  kind: string;
+  url: string | null;
+  note: string;
+  relation: string;
+}
+interface Props { game: Game; pt: boolean; }
+const { game, pt } = Astro.props;
+const base = import.meta.env.BASE_URL.replace(/\/$/, '');
+const home = `${base}${pt ? '/pt-br/' : '/'}`;
+const cover = `${base}/images/covers/${game.cover}`;
+const otherLocale = `${base}/${pt ? 'games' : 'pt-br/games'}/${game.slug}/`;
+const githubOrg = 'https://github.com/hawk-recomp';
+const priorityEN: Record<string, string> = { 'Alta': 'High', 'Média': 'Medium', 'Baixa': 'Low', 'Referência': 'Reference' };
+const kindsEN: Record<string, string> = {
+  'Recompilação': 'Recompilation', 'Decompilação': 'Decompilation',
+  'Recompilação relacionada': 'Related recompilation',
+  'Ferramentas': 'Game tools', 'Mod / ferramenta': 'Modding tool',
+  'Exploit / ferramenta': 'Exploit / tool', 'Projeto de outro jogo': 'Different-game project',
+  'Experimental': 'Experimental', 'Port comunitário': 'Community port'
+};
+const kindsPT: Record<string, string> = {'Mod / ferramenta':'Ferramenta de modificação', 'Port comunitário':'Port comunitário'};
+const kind = pt ? (kindsPT[game.kind] || game.kind) : (kindsEN[game.kind] || game.kind);
+const priority = pt ? game.priority : (priorityEN[game.priority] || game.priority);
+const isRelated = game.relation === 'related';
+const isOffTarget = game.relation === 'skip';
+const hasRepo = !!game.url && !isOffTarget;
+const availability = game.kind === 'Experimental' ? (pt ? 'Experimental — não jogável' : 'Experimental — not playable') : (pt ? 'Disponibilidade não verificada' : 'Availability not verified');
+const summary = pt ? game.note : isRelated
+  ? 'This repository covers a related game or edition, not exactly the title shown in this catalogue.'
+  : game.kind === 'Experimental'
+  ? 'Early-stage research. There is no confirmed playable PC version from this project.'
+  : 'Technical community project. Check the repository for exact scope, platform support, and current progress.';
+---
+<!doctype html>
+<html lang={pt ? 'pt-BR' : 'en-US'}>
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta name="theme-color" content="#080e16" />
+    <meta name="description" content={`${game.title} — ${pt ? 'projeto e referência técnica' : 'project and technical reference'} | HAWK Recomp`} />
+    <title>{game.title} | HAWK Recomp</title>
+  </head>
+  <body>
+    <a class="skip" href="#content">{pt ? 'Pular para conteúdo' : 'Skip to content'}</a>
+    <header class="site-header">
+      <div class="container header-inner">
+        <a class="brand" href={home} aria-label="HAWK Recomp"><img src={`${base}/images/hawk-logo-official.png`} alt="HAWK Recomp" width="72" height="72" /></a>
+        <nav aria-label={pt ? 'Navegação' : 'Navigation'}>
+          <a class="back" href={`${home}#projects`}>← {pt ? 'Voltar aos projetos' : 'Back to projects'}</a>
+          <a class="nav-github" href={githubOrg} target="_blank" rel="noopener noreferrer">GitHub ↗</a>
+          <a class="locale" href={otherLocale} aria-label={pt ? 'Change to English' : 'Mudar para português'}>{pt ? 'EN-US' : 'PT-BR'}</a>
+        </nav>
+      </div>
+    </header>
+    <main id="content">
+      <section class="masthead">
+        <div class="ambient" aria-hidden="true"></div>
+        <div class="container breadcrumb"><a href={`${home}#projects`}>{pt ? 'Projetos' : 'Projects'}</a><span>/</span><span>{game.title}</span></div>
+        <div class="container hero-layout">
+          <div class="cover-frame"><img src={cover} alt={`${game.title} — ${pt ? 'capa' : 'box art'}`} width="117" height="157" loading="eager" fetchpriority="high" /></div>
+          <div class="hero-copy">
+            <div class="eyebrow"><span class="eyebrow-rule"></span> HAWK RECOMP / {pt ? 'CATÁLOGO' : 'CATALOGUE'}</div>
+            <h1>{game.title}</h1>
+            <p class="platform">{game.platforms}</p>
+            <div class="tags"><span>{kind}</span><span>{pt ? 'Prioridade' : 'Priority'}: {priority}</span></div>
+            <div class="actions">
+              {hasRepo ? <a class="primary" href={game.url!} target="_blank" rel="noopener noreferrer">{isRelated ? (pt ? 'Ver projeto relacionado' : 'View related project') : (pt ? 'Acessar repositório' : 'View repository')} <span aria-hidden="true">↗</span></a> : <span class="disabled" aria-disabled="true">{pt ? 'Repositório não verificado' : 'No verified repository'}</span>}
+              <a class="secondary" href="#technical">{pt ? 'Detalhes técnicos' : 'Technical details'} ↓</a>
+            </div>
+          </div>
+        </div>
+      </section>
+      <div class="container detail-grid">
+        <section id="technical" class="panel main-panel">
+          <p class="overline">{pt ? 'VISÃO GERAL' : 'OVERVIEW'}</p>
+          <h2>{pt ? 'Sobre este projeto' : 'About this project'}</h2>
+          <p class="summary">{summary}</p>
+          {isRelated && <div class="notice"><strong>{pt ? 'Projeto relacionado, não idêntico' : 'Related project, not the same title'}</strong><p>{pt ? 'O repositório listado corresponde a outro jogo ou edição. Ele não deve ser interpretado como port deste título.' : 'The listed repository concerns a different game or edition. It must not be treated as a port of this specific title.'}</p></div>}
+          <div class="notice"><strong>{pt ? 'Informação de disponibilidade' : 'Availability notice'}</strong><p>{pt ? 'A presença no catálogo não comprova que exista uma versão jogável. Consulte o repositório para verificar requisitos, limitações e downloads autorizados.' : 'A catalogue listing does not confirm that a playable build exists. Check the repository for requirements, limitations, and authorized downloads.'}</p></div>
+          <div class="divider"></div>
+          <p class="overline">HAWK RECOMP LAUNCHER</p>
+          <h2>{pt ? 'Instalação simplificada' : 'Simplified installation'}</h2>
+          <p class="summary">{pt ? 'Integração planejada. Este título ainda não possui um pacote de instalação validado pelo HAWK Recomp.' : 'Planned integration. This title does not yet have a HAWK Recomp-validated installation package.'}</p>
+          <span class="coming"><span class="dot"></span>{pt ? 'Integração futura — sem download disponível' : 'Planned feature — no download available'}</span>
+        </section>
+        <aside class="sidebar" aria-label={pt ? 'Ficha técnica' : 'Game details'}>
+          <div class="panel specs">
+            <p class="overline">{pt ? 'FICHA DO PROJETO' : 'PROJECT FACTS'}</p>
+            <dl>
+              <div><dt>{pt ? 'Plataformas originais' : 'Original platforms'}</dt><dd>{game.platforms}</dd></div>
+              <div><dt>{pt ? 'Classificação técnica' : 'Technical classification'}</dt><dd>{kind}</dd></div>
+              <div><dt>{pt ? 'Prioridade editorial' : 'Editorial priority'}</dt><dd>{priority}</dd></div>
+              <div><dt>{pt ? 'Estado de execução' : 'Playability'}</dt><dd>{availability}</dd></div>
+              <div><dt>{pt ? 'Repositório' : 'Repository'}</dt><dd>{hasRepo ? (isRelated ? (pt ? 'Relacionado' : 'Related') : (pt ? 'Referência externa' : 'External reference')) : (pt ? 'Não vinculado' : 'Not linked')}</dd></div>
+            </dl>
+          </div>
+          <div class="panel disclaimer"><strong>{pt ? 'Independente e comunitário' : 'Independent & community-led'}</strong><p>{pt ? 'HAWK Recomp não fornece ROMs, ISOs ou arquivos comerciais protegidos. Projetos vinculados pertencem aos seus respectivos autores.' : 'HAWK Recomp does not provide copyrighted ROMs, ISOs, or commercial game files. Linked projects belong to their respective authors.'}</p></div>
+        </aside>
+      </div>
+    </main>
+    <footer class="footer"><div class="container footer-inner"><span>© {new Date().getFullYear()} HAWK RECOMP</span><a href={home}>{pt ? 'Início' : 'Home'} ↑</a><span>NATIVE GAME PORTS</span></div></footer>
+  </body>
+</html>
+<style>
+  :global(*) {box-sizing:border-box} :global(html){scroll-behavior:smooth} :global(body){margin:0;background:#080e16;color:#eef3fa;font-family:Inter,system-ui,Segoe UI,Arial,sans-serif;-webkit-font-smoothing:antialiased} :global(a){color:inherit} :global(a:focus-visible){outline:2px solid #facb3e;outline-offset:4px} 
+  .container{width:min(1320px,calc(100% - 64px));margin-inline:auto} .skip{position:absolute;left:-9999px;top:8px;z-index:20;padding:12px;background:#ffcf3e;color:#10151b}.skip:focus{left:8px}
+  .site-header{height:94px;background:#080e16;border-bottom:1px solid #203047;position:relative;z-index:2}.header-inner{height:100%;display:flex;align-items:center;justify-content:space-between;gap:32px}.brand{display:flex;align-items:center;flex-shrink:0}.brand img{display:block;height:76px;width:76px;object-fit:contain}.header-inner nav{display:flex;align-items:center;gap:28px}.header-inner nav a{text-decoration:none;color:#acbbcf;font-size:12px;font-weight:600;transition:color .2s}.header-inner nav a:hover{color:#facb3e}.locale{border:1px solid #33445b;padding:11px 14px;border-radius:8px;color:#e6edf6!important}
+  .masthead{position:relative;overflow:hidden;background:radial-gradient(ellipse at 75% 40%,#17304d 0%,#0b1728 45%,#080e16 80%);border-bottom:1px solid #25364d}.ambient{pointer-events:none;position:absolute;inset:0;background:linear-gradient(105deg,transparent 35%,rgba(242,185,54,.035) 60%,transparent 85%)}.breadcrumb{display:flex;gap:12px;align-items:center;color:#91a6bd;font-size:12px;padding-top:32px;position:relative}.breadcrumb a{text-decoration:none;color:#d4dfeb}.breadcrumb span:last-child{overflow:hidden;white-space:nowrap;text-overflow:ellipsis}.hero-layout{position:relative;display:grid;grid-template-columns:260px minmax(0,1fr);align-items:center;gap:72px;padding-top:48px;padding-bottom:80px;min-height:470px}
+  .cover-frame{width:260px;aspect-ratio:117/157;padding:10px;background:#13253b;border:1px solid #37516e;border-radius:12px;box-shadow:0 30px 75px #0009,0 0 0 6px #ffffff05}.cover-frame img{display:block;width:100%;height:100%;object-fit:cover;border-radius:6px;image-rendering:auto}.eyebrow,.overline{font-size:10px;font-weight:800;letter-spacing:.19em;color:#f4c83d;text-transform:uppercase}.eyebrow-rule{display:inline-block;height:2px;width:24px;background:#f4c83d;vertical-align:middle;margin-right:10px}.hero-copy h1{font-weight:800;font-size:clamp(35px,5vw,70px);line-height:1.06;letter-spacing:-.04em;margin:20px 0 18px;max-width:890px;overflow-wrap:break-word}.platform{margin:0;color:#b5c6d8;font-size:15px}.tags{display:flex;flex-wrap:wrap;gap:10px;margin:28px 0 30px}.tags span{font-size:11px;background:#192b40;border:1px solid #334a62;padding:10px 13px;border-radius:7px;color:#dfe9f5}.actions{display:flex;gap:12px;flex-wrap:wrap;align-items:center}.primary,.secondary,.disabled{display:inline-flex;align-items:center;justify-content:center;gap:16px;min-height:47px;padding:13px 19px;border-radius:7px;text-decoration:none;font-size:12px;font-weight:800}.primary{background:#ffce3c;color:#111922}.primary:hover{background:#ffe17a}.secondary{border:1px solid #63768d;color:#e2edf9}.secondary:hover{border-color:#f5ce59}.disabled{border:1px solid #364355;color:#8297ad;cursor:not-allowed}
+  .detail-grid{display:grid;grid-template-columns:minmax(0,1.7fr) minmax(270px,1fr);gap:24px;padding-block:50px 90px;align-items:start}.panel{background:#0e1a2a;border:1px solid #26384d;border-radius:13px;padding:30px}.main-panel h2{font-size:clamp(23px,2.3vw,30px);line-height:1.2;margin:12px 0 17px}.summary,.notice p,.disclaimer p{color:#aebed0;font-size:14px;line-height:1.8}.notice{margin:25px 0 0;padding:18px 20px;background:#172536;border-left:3px solid #e4b93e;border-radius:4px}.notice strong{font-size:13px}.notice p{margin-bottom:0;margin-top:8px}.divider{height:1px;background:#2d4055;margin:35px 0}.coming{display:inline-flex;align-items:center;gap:9px;background:#142337;padding:11px 13px;border:1px solid #31455f;border-radius:7px;color:#b9c9da;font-size:11px;margin-top:9px}.dot{height:7px;width:7px;border-radius:50%;background:#e6bd45}.sidebar{display:flex;flex-direction:column;gap:20px}.specs dl{margin:16px 0 0}.specs dl div{display:flex;justify-content:space-between;gap:15px;padding:15px 0;border-bottom:1px solid #25364a;align-items:start}.specs dl div:last-child{border-bottom:0;padding-bottom:0}.specs dt,.specs dd{font-size:12px;margin:0;line-height:1.5}.specs dt{color:#91a5bc}.specs dd{max-width:57%;text-align:right;color:#e9eef6;font-weight:650}.disclaimer strong{color:#e0e9f5;font-size:13px}.disclaimer p{font-size:12px;margin-bottom:0}.footer{border-top:1px solid #22344a;background:#060b12}.footer-inner{display:flex;align-items:center;justify-content:space-between;gap:18px;padding-block:30px;color:#93a5b9;font-size:11px;letter-spacing:.06em}.footer a{text-decoration:none;color:#f4c83d}
+  @media(max-width:900px){.hero-layout{grid-template-columns:205px 1fr;gap:35px;padding-block:42px 62px;min-height:0}.cover-frame{width:205px}.detail-grid{grid-template-columns:1fr}.sidebar{display:grid;grid-template-columns:1fr 1fr}.panel{padding:24px}}
+  @media(max-width:640px){.container{width:calc(100% - 32px)}.site-header{height:80px}.brand img{height:65px;width:65px}.header-inner nav{gap:10px}.header-inner nav a{font-size:11px}.nav-github{display:none}.back{max-width:150px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}.locale{padding:9px}.breadcrumb{padding-top:23px}.hero-layout{grid-template-columns:1fr;gap:30px;padding:30px 0 47px}.cover-frame{width:min(205px,60vw)}.hero-copy h1{font-size:clamp(33px,9vw,50px);margin:14px 0}.tags{margin:22px 0}.actions{align-items:stretch}.actions>*{flex:1}.detail-grid{padding-block:30px 55px;gap:16px}.panel{padding:20px}.sidebar{display:flex}.footer-inner{flex-wrap:wrap;font-size:10px}}
+  @media(prefers-reduced-motion:reduce){:global(html){scroll-behavior:auto}}
+
+/* HAWK V7.0: keyboard access and reduced-motion support */
+:global(a:focus-visible),:global(button:focus-visible),:global(input:focus-visible),:global(select:focus-visible),:global(summary:focus-visible){outline:3px solid #ffce49;outline-offset:3px}
+@media(prefers-reduced-motion:reduce){:global(*),:global(*::before),:global(*::after){animation-duration:.01ms!important;transition-duration:.01ms!important;scroll-behavior:auto!important}}
+</style>

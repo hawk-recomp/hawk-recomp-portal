@@ -1,0 +1,82 @@
+---
+interface Props { pt: boolean }
+const { pt } = Astro.props;
+const base = import.meta.env.BASE_URL.replace(/\/$/, '');
+const root = `${base}/`;
+const home = pt ? `${base}/pt-br/` : root;
+const other = pt ? `${base}/launcher/` : `${base}/pt-br/launcher/`;
+const t = pt ? {
+  page: 'Launcher', back: 'Voltar ao catálogo', intro: 'Uma forma mais simples de jogar ports nativos no PC.',
+  eyebrow: 'EM PLANEJAMENTO · WINDOWS', description: 'A proposta do HAWK Recomp Launcher é preparar ports compatíveis, validar arquivos locais dos jogos e facilitar a execução — sem precisar usar terminal.',
+  status: 'Ainda não disponível para download', statusDetail: 'Esta é a apresentação do produto. O aplicativo ainda não foi lançado.',
+  titleFeatures: 'O que estamos planejando', step: 'Como vai funcionar',
+  features: [ ['Biblioteca unificada', 'Encontre projetos suportados e acompanhe o estado de cada port.'], ['Importação assistida', 'Selecione os arquivos locais compatíveis da sua própria cópia do jogo.'], ['Validação e diagnóstico', 'Verificações de integridade, requisitos e mensagens claras.'], ['Instalação e execução', 'Prepare componentes autorizados e inicie jogos compatíveis em poucos cliques.'] ],
+  steps: [['Escolha um jogo', 'Confira se existe um port compatível e autorizado.'], ['Forneça seus arquivos', 'Selecione a ISO ou pasta quando o projeto oferecer essa opção.'], ['Prepare e jogue', 'O aplicativo executa validações e disponibiliza o botão Jogar após a configuração.']],
+  noteTitle:'Compromisso com transparência', note:'O HAWK Recomp não fornecerá ROMs, ISOs ou arquivos comerciais protegidos sem autorização. A compatibilidade, os requisitos e as condições de redistribuição serão avaliados para cada projeto.',
+  call:'Conhecer projetos', future:'Disponibilidade e plataformas', windows:'Primeiro alvo: Windows 10/11 (x64). Outras plataformas não estão confirmadas.',
+  language:'English (US)', github:'Acompanhar no GitHub', footer:'Projeto comunitário independente. Sem afiliação com fabricantes ou titulares dos jogos.'
+} : {
+  page:'Launcher', back:'Back to catalogue', intro:'An easier way to play native PC ports.',
+  eyebrow:'PLANNED · WINDOWS', description:'HAWK Recomp Launcher aims to set up compatible ports, validate local game files, and make launching games easier — no terminal required.',
+  status:'Not available for download yet', statusDetail:'This is a product concept page. The application has not been released.',
+  titleFeatures:'Planned features', step:'How it will work',
+  features:[['Unified library','Discover supported projects and track each port’s technical status.'],['Guided import','Select compatible local files from your own game copy.'],['Validation and diagnostics','Integrity checks, prerequisites and clear troubleshooting.'],['Setup and launch','Prepare authorized components and launch compatible games in a few clicks.']],
+  steps:[['Choose a game','Check whether a compatible and distributable port exists.'],['Provide your files','Select an ISO or game folder when supported by that project.'],['Set up and play','The app validates the installation and enables Play once setup is complete.']],
+  noteTitle:'Transparency first', note:'HAWK Recomp will not provide protected commercial ROMs, ISOs, or game assets without authorization. Compatibility, prerequisites, and redistribution terms will be assessed for each project.',
+  call:'Explore projects',future:'Availability and platforms',windows:'Initial target: Windows 10/11 (x64). Other platforms are not confirmed.',
+  language:'Português (Brasil)',github:'Follow on GitHub',footer:'Independent community project. Not affiliated with game publishers or hardware manufacturers.'
+};
+---
+<!doctype html>
+<html lang={pt ? 'pt-BR':'en-US'}>
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <meta name="color-scheme" content="dark" />
+  <title>HAWK Recomp Launcher — HAWK Recomp</title>
+  <meta name="description" content={t.description} />
+  <link rel="icon" href={`${base}/favicon.svg`} type="image/svg+xml" />
+</head>
+<body>
+  <a class="skip" href="#main">{pt?'Pular para o conteúdo':'Skip to content'}</a>
+  <header class="topbar">
+    <div class="shell topinside">
+      <a class="brand" href={home} aria-label="HAWK Recomp"><img src={`${base}/images/hawk-logo-official.png`} alt="HAWK Recomp" /></a>
+      <nav aria-label={pt?'Navegação':'Navigation'}>
+        <a href={home}>{t.back}</a>
+        <a class="switch" href={other} hreflang={pt?'en-US':'pt-BR'}>{t.language}</a>
+      </nav>
+    </div>
+  </header>
+  <main id="main">
+    <section class="hero shell">
+      <div class="copy">
+        <div class="eyebrow"><span class="pulse"></span>{t.eyebrow}</div>
+        <p class="label">HAWK RECOMP / DESKTOP APP</p>
+        <h1>HAWK RECOMP <span>LAUNCHER</span></h1>
+        <h2>{t.intro}</h2>
+        <p class="lead">{t.description}</p>
+        <div class="notice" role="status"><span aria-hidden="true">●</span><strong>{t.status}</strong><small>{t.statusDetail}</small></div>
+        <div class="actions"><a class="primary" href={`${home}#projects`}>{t.call} <span aria-hidden="true">↗</span></a><a class="secondary" href="https://github.com/hawk-recomp" target="_blank" rel="noopener noreferrer">{t.github} <span aria-hidden="true">↗</span></a></div>
+      </div>
+      <div class="app-preview" aria-label={pt?'Prévia conceitual da interface':'Conceptual interface preview'}>
+        <div class="window"><div class="windowhead"><span class="dotrow"><i></i><i></i><i></i></span><strong>HAWK RECOMP</strong><small>LAUNCHER · CONCEPT</small></div>
+        <div class="sidebar"><b>HR</b><span>▦</span><span>⌕</span><span>⚙</span></div>
+        <div class="appcontent"><small>LIBRARY / {pt?'BIBLIOTECA':'YOUR GAMES'}</small><h3>{pt?'Seus jogos':'Your games'}</h3><div class="previewcards"><div class="previewcard"><span class="art">01</span><strong>BLACK</strong><small>Xbox</small></div><div class="previewcard"><span class="art alt">02</span><strong>FIFA Street 2</strong><small>Experimental</small></div></div><div class="bar"><span></span></div><p>{pt?'Visualização ilustrativa — nenhum jogo está instalado.':'Illustrative interface — no games are installed.'}</p></div>
+        </div>
+      </div>
+    </section>
+    <section class="panel shell"><p class="sectionlabel">01 / FEATURES</p><h2>{t.titleFeatures}</h2><div class="features">{t.features.map((f,i)=><article class="feature"><span>0{i+1}</span><h3>{f[0]}</h3><p>{f[1]}</p></article>)}</div></section>
+    <section class="how shell"><p class="sectionlabel">02 / WORKFLOW</p><h2>{t.step}</h2><div class="steps">{t.steps.map((s,i)=><div class="step"><div class="num">{String(i+1).padStart(2,'0')}</div><h3>{s[0]}</h3><p>{s[1]}</p></div>)}</div></section>
+    <section class="bottom shell"><div class="note"><h2>{t.noteTitle}</h2><p>{t.note}</p></div><div class="platform"><h2>{t.future}</h2><p>{t.windows}</p></div></section>
+  </main>
+  <footer><div class="shell foot"><span>© {new Date().getFullYear()} HAWK RECOMP</span><p>{t.footer}</p><a href={home}>{t.back} ↑</a></div></footer>
+</body>
+</html>
+<style>
+  :global(*){box-sizing:border-box}:global(html){background:#080d16;scroll-behavior:smooth}:global(body){margin:0;color:#eef4fe;font-family:Inter,ui-sans-serif,system-ui,-apple-system,'Segoe UI',sans-serif;background:radial-gradient(ellipse at 79% 12%,#152941 0%,transparent 36%),#080d16;line-height:1.55}:global(a){color:inherit;text-decoration:none}:global(a:focus-visible){outline:2px solid #ffce44;outline-offset:4px}.shell{width:min(1280px,calc(100% - 88px));margin-inline:auto}.skip{position:absolute;top:-100px;left:15px;padding:12px;background:#ffcf45;color:#000;z-index:100}.skip:focus{top:10px}.topbar{border-bottom:1px solid #283648;background:rgba(7,13,23,.88)}.topinside{min-height:108px;display:flex;align-items:center;justify-content:space-between;gap:24px}.brand img{width:102px;height:94px;object-fit:contain;display:block}.topinside nav{display:flex;align-items:center;gap:32px;font-size:13px;color:#b9c8d8}.topinside nav a:hover{color:#ffd252}.switch{border:1px solid #34465c;border-radius:30px;padding:9px 17px}.hero{min-height:min(765px,calc(100svh - 108px));display:grid;grid-template-columns:1fr 1fr;gap:60px;align-items:center;padding-top:72px;padding-bottom:84px}.eyebrow,.label,.sectionlabel{font-size:11px;letter-spacing:.19em;font-weight:800;color:#f3c64b}.eyebrow{display:flex;align-items:center;gap:10px}.pulse{height:8px;width:8px;background:#ffcf43;border-radius:50%;box-shadow:0 0 20px #ffd24f}.label{margin:25px 0 8px;color:#9fbbd3}h1{font-size:clamp(38px,4.2vw,69px);line-height:1.02;letter-spacing:-.04em;margin:0;font-weight:850}h1 span{color:#ffce49;display:block}h2{font-size:clamp(22px,2.25vw,34px);line-height:1.22;margin:16px 0 18px;letter-spacing:-.02em}.hero h2{font-size:clamp(22px,2.35vw,32px);max-width:570px}.lead{color:#aabbd0;max-width:570px;font-size:15px;line-height:1.8}.notice{border:1px solid #485038;background:#22251888;border-radius:12px;padding:15px 19px;margin:28px 0;display:grid;grid-template-columns:12px 1fr;gap:1px 12px}.notice>span{font-size:10px;color:#ffce44;margin-top:6px}.notice strong{font-size:13px}.notice small{grid-column:2;color:#b8c1be;font-size:12px}.actions{display:flex;gap:11px;flex-wrap:wrap}.actions a{padding:13px 20px;border-radius:8px;font-weight:700;font-size:13px}.primary{color:#111821;background:#f3c33e}.secondary{border:1px solid #3a4c61;color:#d4e0ee}.app-preview{min-width:0;transform:perspective(1050px) rotateY(-6deg);filter:drop-shadow(0 38px 35px #0009)}.window{background:#0c1726;border:1px solid #354359;border-radius:15px;overflow:hidden;min-height:380px;display:grid;grid-template-columns:63px 1fr;grid-template-rows:51px 1fr;box-shadow:0 0 0 8px #19263855}.windowhead{grid-column:1/-1;border-bottom:1px solid #2d3d51;background:#142236;display:flex;align-items:center;gap:12px;padding:0 17px}.windowhead strong{font-size:11px;letter-spacing:.12em}.windowhead small{margin-left:auto;color:#91a1b9;font-size:9px}.dotrow{display:flex;gap:5px}.dotrow i{height:7px;width:7px;border-radius:50%;background:#586a7f}.dotrow i:first-child{background:#f0c64d}.sidebar{display:flex;flex-direction:column;align-items:center;gap:29px;padding:22px 0;background:#101d2e;border-right:1px solid #283749;color:#9aaec3}.sidebar b{color:#ffcf45}.appcontent{padding:26px 24px}.appcontent>small{color:#f3ca52;letter-spacing:.14em;font-size:9px}.appcontent h3{font-size:26px;margin:5px 0 20px}.previewcards{display:flex;gap:14px}.previewcard{flex:1;min-width:0;display:flex;flex-direction:column;gap:5px}.previewcard .art{display:flex;align-items:flex-end;justify-content:flex-start;padding:16px;font-weight:800;font-size:34px;color:#ffd85b;aspect-ratio:1.1;background:linear-gradient(140deg,#473d24,#151f2c 75%);border-radius:7px}.previewcard .art.alt{background:linear-gradient(140deg,#263e5d,#131927 78%)}.previewcard strong{font-size:11px}.previewcard small{font-size:10px;color:#8295ad}.bar{height:5px;background:#23354c;border-radius:5px;margin-top:21px}.bar span{display:block;background:#f0c844;width:58%;height:100%;border-radius:5px}.appcontent p{font-size:10px;color:#8496ab}.panel,.how{padding:68px 0 75px;border-top:1px solid #253249}.panel h2,.how h2{margin:7px 0 32px}.features{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:16px}.feature{background:linear-gradient(150deg,#142337,#0d1726);border:1px solid #273951;border-radius:12px;padding:24px 21px;min-height:200px}.feature span{color:#f8c846;font-weight:800;font-size:11px}.feature h3,.step h3{font-size:17px;line-height:1.35;margin:24px 0 7px}.feature p,.step p,.bottom p{color:#a9bbcf;font-size:13px;line-height:1.75;margin:0}.steps{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:18px}.step{padding:22px;border-top:2px solid #ba9844;background:#0e1928}.num{font-size:35px;font-weight:900;color:#e9be47}.step h3{margin:12px 0 8px}.bottom{display:grid;grid-template-columns:1.5fr 1fr;gap:25px;padding:30px 0 80px}.note,.platform{background:#101c2c;border:1px solid #2d3d50;border-radius:12px;padding:26px}.bottom h2{font-size:21px;margin:0 0 13px}footer{border-top:1px solid #29384b}.foot{padding:28px 0;display:flex;align-items:center;justify-content:space-between;gap:30px;color:#93a9bf;font-size:11px}.foot p{max-width:480px;text-align:center;margin:0}@media(max-width:1050px){.hero{gap:26px}.features{grid-template-columns:repeat(2,minmax(0,1fr))}.app-preview{transform:none}}@media(max-width:700px){.shell{width:calc(100% - 32px)}.topinside{min-height:82px}.brand img{width:74px;height:72px}.topinside nav{gap:12px;font-size:11px}.switch{padding:8px}.hero{grid-template-columns:1fr;gap:40px;padding-top:54px;padding-bottom:60px;min-height:0}.lead{font-size:14px}.window{min-height:320px}.appcontent{padding:18px 14px}.previewcard .art{font-size:25px;padding:10px}.features,.steps,.bottom{grid-template-columns:1fr}.panel,.how{padding:50px 0}.feature{min-height:145px}.foot{flex-direction:column;text-align:center;gap:12px}}@media(prefers-reduced-motion:reduce){:global(html){scroll-behavior:auto}}
+
+/* HAWK V7.0: keyboard access and reduced-motion support */
+:global(a:focus-visible),:global(button:focus-visible),:global(input:focus-visible),:global(select:focus-visible),:global(summary:focus-visible){outline:3px solid #ffce49;outline-offset:3px}
+@media(prefers-reduced-motion:reduce){:global(*),:global(*::before),:global(*::after){animation-duration:.01ms!important;transition-duration:.01ms!important;scroll-behavior:auto!important}}
+</style>
